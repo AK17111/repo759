@@ -3,5 +3,6 @@
 #SBATCH --job-name=FirstSlurm
 #SBATCH --output=FirstSlurm.out
 #SBATCH --error=FirstSlurm.err
+#SBATCH --partition=instruction
 
 hostname
