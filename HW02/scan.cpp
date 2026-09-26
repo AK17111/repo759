@@ -1,15 +1,22 @@
 #include "scan.h"
-#include<iostream>
-#include<cstdlib>
-#include <vector>
 
+template <typename T>
+T* scan(const T* input, int n)
+{
+    T* output = new T[n];
 
-std::vector<int> scan(std::vector<int>& input){
-    std::vector<int> output; 
-    int sum = 0; 
-    for(std::size_t i = 0; i < input.size(); i++){
-        sum += input[i]; 
-        output[i] = sum; 
+    if (n > 0)
+    {
+        output[0] = input[0];
+
+        for (int i = 1; i < n; i++)
+        {
+            output[i] = output[i - 1] + input[i];
+        }
     }
+
     return output;
 }
+
+template float* scan(const float* input, int n);
+template int* scan(const int* input, int n);

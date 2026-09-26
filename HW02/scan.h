@@ -1,8 +1,7 @@
 #ifndef SCAN_H
 #define SCAN_H
-#include <vector>
 
-
-std::vector<int> scan(std::vector<int>& input);
+template <typename T>
+T* scan(const T* input, int n);
 
 #endif
