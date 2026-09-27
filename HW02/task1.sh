@@ -5,6 +5,7 @@
 #SBATCH --output=Task1.out
 #SBATCH --error=Task1.err
 #SBATCH --partition=instruction
+#SBATCH --mem=12G
 
 ./task1 1024
 ./task1 2048
