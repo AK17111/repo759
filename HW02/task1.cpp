@@ -1,7 +1,7 @@
 #include<iostream>
 #include<cstdlib>
 // std::ratio provides easy conversions between metric units
-#include <ratio>
+#include <chrono>
 #include "scan.h"
 
 
