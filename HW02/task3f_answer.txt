@@ -1,0 +1,28 @@
+Task 3f
+
+Euler compute node (instruction partition), n = 1024, compiled with -O3:
+  mmul1 (i,j,k)         5840.06 ms
+  mmul2 (i,k,j)          404.25 ms
+  mmul3 (j,k,i)        12749.2  ms
+  mmul4 (i,j,k, vector) 5810.61 ms
+  Last element of C = 256.381 for all four.
+
+mmul2 is about 14x faster than mmul1, and mmul3 is about 2.2x slower than
+mmul1. The difference comes from how the innermost loop moves through
+memory, since all matrices are stored row-major. In mmul2 the inner loop
+runs over j, so B[k*n+j] and C[i*n+j] are read with stride 1 while
+A[i*n+k] stays constant. Every double in each 64-byte cache line gets used,
+the hardware prefetcher keeps the data coming, and the compiler can
+vectorize the loop with SIMD. In mmul1 the inner loop runs over k: A is
+read along a row (stride 1), but B[k*n+j] is read down a column with a
+stride of n doubles (8 KB). Nearly every access to B misses the cache and
+uses only 8 of the 64 bytes loaded. In mmul3 the inner loop runs over i,
+so both A[i*n+k] and C[i*n+j] are read down columns with stride n. That is
+two strided streams instead of one, plus a read-modify-write of C, which
+means about twice the cache and TLB misses of mmul1 and the worst time.
+
+mmul1 and mmul4 take essentially the same time (5840 vs 5811 ms, within
+noise). They use the same loop order and memory access pattern, and at -O3
+indexing a std::vector passed by const reference compiles down to the same
+raw-pointer loads as the double* version. There is no bounds checking with
+operator[], so the vector adds no measurable overhead.
