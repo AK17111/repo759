@@ -1,0 +1,41 @@
+Running Task 3: n=1000000, t=8, ts=2
+-1000
+1000
+321.508
+Running Task 3: n=1000000, t=8, ts=4
+-1000
+1000
+164.226
+Running Task 3: n=1000000, t=8, ts=8
+-1000
+1000
+81.9073
+Running Task 3: n=1000000, t=8, ts=16
+-1000
+1000
+43.8668
+Running Task 3: n=1000000, t=8, ts=32
+-1000
+1000
+23.5276
+Running Task 3: n=1000000, t=8, ts=64
+-1000
+1000
+16.9438
+Running Task 3: n=1000000, t=8, ts=128
+-1000
+1000
+14.8432
+Running Task 3: n=1000000, t=8, ts=256
+-1000
+1000
+14.4818
+Running Task 3: n=1000000, t=8, ts=512
+-1000
+1000
+10.0677
+Running Task 3: n=1000000, t=8, ts=1024
+-1000
+1000
+12.7637
+Finished. Results saved in task3_ts_results.txt
