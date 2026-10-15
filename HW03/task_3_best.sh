@@ -11,7 +11,7 @@ set -euo pipefail
 g++ task3.cpp msort.cpp -Wall -O3 -std=c++17 -o task3 -fopenmp
 
 #best measured from previous part
-BEST_TS=256
+BEST_TS=512
 
 : > task3_t_results.txt
 
