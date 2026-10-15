@@ -1,4 +1,3 @@
-
 #!/bin/bash
 #SBATCH --job-name=task1
 #SBATCH --output=task1_%j.out
