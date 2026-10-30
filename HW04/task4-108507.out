@@ -1,0 +1,74 @@
+Running static with 1 threads
+time: 409.608ms
+Running static with 2 threads
+time: 230.61ms
+Running static with 3 threads
+time: 178.774ms
+Running static with 4 threads
+time: 238.731ms
+Running static with 5 threads
+time: 203.058ms
+Running static with 6 threads
+time: 257.664ms
+Running static with 7 threads
+time: 240.333ms
+Running static with 8 threads
+time: 255.098ms
+Running dynamic with 1 threads
+time: 428.309ms
+Running dynamic with 2 threads
+time: 690.848ms
+Running dynamic with 3 threads
+time: 639.181ms
+Running dynamic with 4 threads
+time: 562.586ms
+Running dynamic with 5 threads
+time: 489.265ms
+Running dynamic with 6 threads
+time: 670.879ms
+Running dynamic with 7 threads
+time: 626.244ms
+Running dynamic with 8 threads
+time: 640.525ms
+Running guided with 1 threads
+time: 410.07ms
+Running guided with 2 threads
+time: 234.817ms
+Running guided with 3 threads
+time: 213.237ms
+Running guided with 4 threads
+time: 230.867ms
+Running guided with 5 threads
+time: 230.926ms
+Running guided with 6 threads
+time: 342.586ms
+Running guided with 7 threads
+time: 362.286ms
+Running guided with 8 threads
+time: 375.264ms
+Benchmark results:
+schedule,threads,time_ms
+static,1,409.608
+static,2,230.61
+static,3,178.774
+static,4,238.731
+static,5,203.058
+static,6,257.664
+static,7,240.333
+static,8,255.098
+dynamic,1,428.309
+dynamic,2,690.848
+dynamic,3,639.181
+dynamic,4,562.586
+dynamic,5,489.265
+dynamic,6,670.879
+dynamic,7,626.244
+dynamic,8,640.525
+guided,1,410.07
+guided,2,234.817
+guided,3,213.237
+guided,4,230.867
+guided,5,230.926
+guided,6,342.586
+guided,7,362.286
+guided,8,375.264
