@@ -1,44 +1,67 @@
 #include <cstddef>
 #include <iostream>
-#include <fstream>  
+#include <fstream>
 #include <cmath>
-#include <cstdlib>  
-#include <ctime>   
+#include <cstdlib>
+#include <ctime>
 #include <chrono>
 #include <random>
+#include <string>
 
 using std::chrono::high_resolution_clock;
 using std::chrono::duration;
 
 // Constants
-const double G = 1.0;          // Gravitational constant
-const double softening = 0.1;  // Softening length
-const double dt = 0.01;        // Time step
-const double board_size = 4.0; // Size of the board
+const double G = 1.0;
+const double softening = 0.1;
+const double dt = 0.01;
+const double board_size = 4.0;
 
-// Function to calculate acceleration due to gravity
-void getAcc(const double pos[][3], const double mass[], double acc[][3], int N) {
+// Serial acceleration calculation
+void getAcc(const double pos[][3], const double mass[],
+            double acc[][3], int N) {
 
-    // TODO:
+    for (int i = 0; i < N; i++) {
+        acc[i][0] = 0.0;
+        acc[i][1] = 0.0;
+        acc[i][2] = 0.0;
 
+        for (int j = 0; j < N; j++) {
+            if (i != j) {
+                double dx = pos[j][0] - pos[i][0];
+                double dy = pos[j][1] - pos[i][1];
+                double dz = pos[j][2] - pos[i][2];
+
+                double r2 = dx * dx + dy * dy + dz * dz
+                            + softening * softening;
+
+                double inv_r3 = 1.0 / (r2 * std::sqrt(r2));
+
+                acc[i][0] += G * dx * inv_r3 * mass[j];
+                acc[i][1] += G * dy * inv_r3 * mass[j];
+                acc[i][2] += G * dz * inv_r3 * mass[j];
+            }
+        }
+    }
 }
 
 // For debug: save positions to a CSV file
-void savePositionsToCSV(const double pos[][3], int N, int step, const std::string &filename) {
+void savePositionsToCSV(const double pos[][3], int N, int step,
+                        const std::string &filename) {
     std::ofstream file;
-    
-    // Open the file in append mode
     file.open(filename, std::ios_base::app);
 
     if (file.is_open()) {
         file << step << ",[";
         for (int i = 0; i < N; i++) {
             if (i != N - 1)
-                file << "[" << pos[i][0] << "," << pos[i][1] << "," << pos[i][2] << "],";
+                file << "[" << pos[i][0] << "," << pos[i][1]
+                     << "," << pos[i][2] << "],";
             else
-                file << "[" << pos[i][0] << "," << pos[i][1] << "," << pos[i][2] << "]";
+                file << "[" << pos[i][0] << "," << pos[i][1]
+                     << "," << pos[i][2] << "]";
         }
-        file << "]\n";  // Newline for separation between steps
+        file << "]\n";
         file.close();
     } else {
         std::cerr << "Unable to open file!" << std::endl;
@@ -49,112 +72,128 @@ int main(int argc, char *argv[]) {
     high_resolution_clock::time_point start;
     high_resolution_clock::time_point end;
     duration<double, std::milli> duration_sec;
+
     start = high_resolution_clock::now();
 
-    // Check if correct number of arguments are provided
     if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <number_of_particles> <simulation_end_time>" << std::endl;
+        std::cerr << "Usage: " << argv[0]
+                  << " <number_of_particles> <simulation_end_time>"
+                  << std::endl;
         return 1;
     }
 
-    // Read N and tEnd from command line
-    int N = std::stoi(argv[1]);     // Number of particles
-    double tEnd = std::stod(argv[2]); // Time at which simulation ends
+    int N = std::stoi(argv[1]);
+    double tEnd = std::stod(argv[2]);
 
-    // File to save positions
+    if (N <= 0 || tEnd <= 0.0) {
+        std::cerr << "N and simulation_end_time must be positive."
+                  << std::endl;
+        return 1;
+    }
+
     std::string filename = "positions.csv";
 
-    // Clear the file before starting simulation (optional)
-    std::ofstream file;
-    file.open(filename, std::ofstream::out | std::ofstream::trunc);
+    // Clear debug output file.
+    std::ofstream file(filename, std::ofstream::out | std::ofstream::trunc);
     file.close();
 
-    // Allocate dynamic arrays based on N
+    // Allocate dynamic arrays.
     double* mass = new double[N];
     double(*pos)[3] = new double[N][3];
     double(*vel)[3] = new double[N][3];
     double(*acc)[3] = new double[N][3];
 
-    // Create a random number engine
-    std::mt19937 generator(std::random_device{}());
-
-    // Create random distributions
+    // Fixed seed makes runs reproducible.
+    std::mt19937 generator(17);
     std::uniform_real_distribution<double> uniform_dist(0.0, 1.0);
     std::normal_distribution<double> normal_dist(0.0, 1.0);
 
-    // Simulation parameters
     double t = 0.0;
 
-    // Set initial masses and random positions/velocities
+    // Initial masses, positions, and velocities.
     for (int i = 0; i < N; i++) {
         mass[i] = uniform_dist(generator);
 
-        pos[i][0] = normal_dist(generator);
-        pos[i][1] = normal_dist(generator);
-        pos[i][2] = normal_dist(generator);
-
-        vel[i][0] = normal_dist(generator);
-        vel[i][1] = normal_dist(generator);
-        vel[i][2] = normal_dist(generator);
+        for (int d = 0; d < 3; d++) {
+            pos[i][d] = normal_dist(generator);
+            vel[i][d] = normal_dist(generator);
+        }
     }
 
-    // Convert to Center-of-Mass frame
+    // Convert to center-of-mass frame.
     double velCM[3] = {0.0, 0.0, 0.0};
     double totalMass = 0.0;
+
     for (int i = 0; i < N; i++) {
-        velCM[0] += vel[i][0] * mass[i];
-        velCM[1] += vel[i][1] * mass[i];
-        velCM[2] += vel[i][2] * mass[i];
+        for (int d = 0; d < 3; d++) {
+            velCM[d] += vel[i][d] * mass[i];
+        }
         totalMass += mass[i];
     }
 
-    velCM[0] /= totalMass;
-    velCM[1] /= totalMass;
-    velCM[2] /= totalMass;
-
-    for (int i = 0; i < N; i++) {
-        vel[i][0] -= velCM[0];
-        vel[i][1] -= velCM[1];
-        vel[i][2] -= velCM[2];
+    for (int d = 0; d < 3; d++) {
+        velCM[d] /= totalMass;
     }
 
-    // Initial accelerations
+    for (int i = 0; i < N; i++) {
+        for (int d = 0; d < 3; d++) {
+            vel[i][d] -= velCM[d];
+        }
+    }
+
+    // Initial accelerations.
     getAcc(pos, mass, acc, N);
 
-    // Number of timesteps
-    int Nt = int(tEnd / dt);
+    int Nt = static_cast<int>(tEnd / dt);
 
-    // Main simulation loop
+    // Main simulation loop.
     for (int step = 0; step < Nt; step++) {
-        
-        // TODO: (1/2) kick
 
+        // First half kick.
+        for (int i = 0; i < N; i++) {
+            for (int d = 0; d < 3; d++) {
+                vel[i][d] += acc[i][d] * dt / 2.0;
+            }
+        }
 
-        // TODO: Drift
-      
+        // Drift.
+        for (int i = 0; i < N; i++) {
+            for (int d = 0; d < 3; d++) {
+                pos[i][d] += vel[i][d] * dt;
 
-        // TODO: Ensure particles stay within the board limits
+                if (pos[i][d] > board_size)
+                    pos[i][d] = board_size;
 
-        // Update accelerations
+                if (pos[i][d] < -board_size)
+                    pos[i][d] = -board_size;
+            }
+        }
+
+        // Update accelerations.
         getAcc(pos, mass, acc, N);
 
-        // TODO: (1/2) kick
+        // Second half kick.
+        for (int i = 0; i < N; i++) {
+            for (int d = 0; d < 3; d++) {
+                vel[i][d] += acc[i][d] * dt / 2.0;
+            }
+        }
 
-        // Update time
         t += dt;
 
-        // For debug: save positions to CSV at each step
+        // Optional debug output; leave disabled for timing.
         // savePositionsToCSV(pos, N, step, filename);
     }
 
-    // Clean up dynamically allocated memory
     delete[] mass;
     delete[] pos;
     delete[] vel;
     delete[] acc;
 
     end = high_resolution_clock::now();
-    duration_sec = std::chrono::duration_cast<duration<double, std::milli> >(end - start);
+    duration_sec =
+        std::chrono::duration_cast<duration<double, std::milli>>(end - start);
+
     std::cout << "time: " << duration_sec.count() << "ms\n";
 
     return 0;
