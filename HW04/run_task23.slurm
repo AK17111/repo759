@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=nbody-test
+#SBATCH --partition=research
 #SBATCH --output=nbody-test-%j.out
 #SBATCH --error=nbody-test-%j.err
 #SBATCH --time=01:00:00
