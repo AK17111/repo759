@@ -4,7 +4,7 @@
 #SBATCH --output=task3_%j.out
 #SBATCH --error=task3_%j.err
 #SBATCH --ntasks=1
-#SBATCH --gres=gpu:a100:1
+#SBATCH --gres=gpu:rtx4000ada:1
 #SBATCH --time=04:00:00
 
 module load nvidia/cuda
