@@ -2,6 +2,7 @@
 #SBATCH --job-name=hw05_task3
 #SBATCH --output=task3_%j.out
 #SBATCH --error=task3_%j.err
+#SBATCH --ntasks=1
 #SBATCH --gpus-per-task=1
 #SBATCH --time=02:00:00
 
