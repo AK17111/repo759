@@ -4,6 +4,7 @@
 #include <random>
 #include <vector>
 #include <cuda_runtime.h>
+#include "vscale.cuh"
 
 #define CUDA_CHECK(call)                                      \
     do {                                                      \
