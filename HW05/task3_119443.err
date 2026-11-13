@@ -1,0 +1,6 @@
+task3.cu(83): error: identifier "vscale" is undefined
+      vscale<<<blocks, threads>>>(dA, dB, n);
+      ^
+
+1 error detected in the compilation of "task3.cu".
+/var/spool/slurmd/job119443/slurm_script: line 24: ./task3: No such file or directory
